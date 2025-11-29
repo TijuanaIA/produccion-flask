@@ -1,0 +1,355 @@
+{% extends "base.html" %}
+{% block title %}Salidas por Lote - Producción{% endblock %}
+{% block header %}📦 Registro de Salida por Lote{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+
+  <!-- 🧭 Indicador de pasos -->
+  <div class="d-flex justify-content-between mb-4">
+    <span class="badge bg-primary fs-6">1️⃣ Datos</span>
+    <span class="badge bg-secondary fs-6">2️⃣ Color</span>
+    <span class="badge bg-secondary fs-6">3️⃣ Confirmar</span>
+  </div>
+
+  <!-- 1️⃣ Datos del Pedido -->
+  <div class="card shadow-sm p-3 mb-4">
+    <h5 class="fw-bold text-primary mb-3">Datos del Pedido🗒️</h5>
+    <div class="row g-3">
+      <div class="col-md-3">
+        <label class="form-label fw-semibold">🔢 Pedido</label>
+        <input type="text" class="form-control" name="pedido" value="{{ultimo_pedido}}" readonly>
+      </div>
+      <div class="col-md-3">
+        <label class="form-label fw-semibold">📅Fecha</label>
+        <input type="date" class="form-control" name="fecha" value="{{ fecha_hoy }}" required>
+      </div>
+      <div class="col-md-3">
+        <label class="form-label fw-semibold">⚙️Tipo de Salida</label>
+        <input type="text" class="form-control" name="tipo_salida" value="Surtido" readonly>
+      </div>
+      <div class="col-md-3">
+        <label class="form-label fw-semibold">👤Cliente</label>
+        <input type="text" class="form-control" name="cliente" required>
+      </div>
+    </div>
+
+    <div class="row g-3 mt-3">
+      <div class="col-md-3">
+        <label class="form-label fw-semibold">👤Usuario</label>
+        <input type="text" class="form-control" name="usuario" value="{{ usuario_actual }}" readonly>
+      </div>
+      <div class="col-md-5">
+        <label class="form-label fw-semibold">Observaciones✏️</label>
+        <input type="text" class="form-control" name="observaciones">
+      </div>
+    </div>
+  </div>
+
+  <!-- 2️⃣ Selección de color -->
+  <div class="card shadow-sm p-3 mb-4">
+    <h5 class="fw-bold text-primary mb-3">Selecciona el Color 🎨</h5>
+    <div class="d-flex align-items-center gap-2">
+      <select class="form-select w-50" id="color">
+        <option value="">-- Selecciona un color --</option>
+        {% for c in colores %}
+          <option value="{{ c.id }}">{{ c.nombre }}</option>
+        {% endfor %}
+      </select>
+      <button type="button" class="btn btn-info" id="btn_ver_inventario" disabled data-bs-toggle="modal" data-bs-target="#modalInventario">
+        <i class="bi bi-eye"></i> Ver Inventario
+      </button>
+    </div>
+  </div>
+
+  <!-- Modal Inventario -->
+  <div class="modal fade" id="modalInventario" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-light">
+          <h4 class="fw-bold text-primary">Inventario del color:<span id="nombre_color_modal"></span> </h4>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div id="modal_body_inventario"></div>
+          <div class="d-flex justify-content-between align-items-center mt-3">
+            <h6>Inventario total disponible: <span id="modal_total_disponible" class="text-success fw-bold">0</span></h6>
+            <h6>Total surtido: <span id="modal_total_surtido" class="text-primary fw-bold">0</span></h6>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-success" id="btn_agregar_modal">
+            <i class="bi bi-plus-circle"></i> Agregar al lote
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4️⃣ Resumen del Surtido -->
+  <div class="mt-4">
+    <h5 class="fw-bold text-primary mb-3">Resumen del Surtido 📑</h5>
+    <table class="table table-bordered table-striped text-center align-middle shadow-sm">
+      <thead class="table-secondary">
+        <tr>
+          <th>Color</th>
+          {% for t in tallas %}
+            <th>{{ t.nombre }}</th>
+          {% endfor %}
+          <th>Total</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody id="tabla_lote"></tbody>
+    </table>
+
+    <div class="d-flex justify-content-between align-items-center mt-2">
+      <h6 class="fw-bold">Total general: <span id="total_general" class="text-primary">0</span></h6>
+
+      <button class="btn btn-primary" id="btn_dar_salida">
+        <i class="bi bi-box-arrow-up-right"></i> Dar Salida
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+let tallasOrdenadas = [];
+let colorActual = '';
+let colorNombre = '';
+
+
+const btnVerInventario = document.getElementById("btn_ver_inventario");
+
+// Habilitar botón al seleccionar color
+document.getElementById("color").addEventListener("change", (e) => {
+  btnVerInventario.disabled = !e.target.value;
+});
+
+// Cargar inventario en el modal
+btnVerInventario.addEventListener("click", async () => {
+  const colorId = document.getElementById("color").value;
+  if (!colorId) return;
+  const modalBody = document.getElementById("modal_body_inventario");
+  const totalDisponible = document.getElementById("modal_total_disponible");
+  const totalSurtido = document.getElementById("modal_total_surtido");
+
+  modalBody.innerHTML = "";
+  totalDisponible.textContent = "0";
+  totalSurtido.textContent = "0";
+
+  const res = await fetch(`/inventario_por_color/${colorId}`);
+  const data = await res.json();
+
+  colorActual = data.color_id;
+  colorNombre = data.color_nombre;
+  tallasOrdenadas = data.tallas;
+
+  document.getElementById("nombre_color_modal").textContent = colorNombre;
+
+  let totalInv = 0;
+  const table = document.createElement("table");
+  table.className = "table table-bordered align-middle";
+  const thead = document.createElement("thead");
+  thead.innerHTML = `
+    <tr class="table-light text-center">
+      <th>Talla</th>
+      <th>Disponible</th>
+      <th>Surtir</th>
+    </tr>`;
+  table.appendChild(thead);
+
+  const tbody = document.createElement("tbody");
+  data.tallas.forEach(t => {
+    totalInv += t.cantidad;
+    const fila = document.createElement("tr");
+    fila.innerHTML = `
+      <td class="fw-bold text-center">${t.nombre}</td>
+      <td class="text-center">${t.cantidad}</td>
+      <td><input type="number" class="form-control form-control-sm text-center surtido-input"
+        name="surtido_${t.id}" min="0" max="${t.cantidad}" value="0"></td>`;
+    if (t.cantidad === 0) {
+      fila.classList.add("table-secondary");
+      fila.querySelector("input").disabled = true;
+    }
+    tbody.appendChild(fila);
+  });
+  table.appendChild(tbody);
+  modalBody.appendChild(table);
+  totalDisponible.textContent = totalInv;
+
+  modalBody.querySelectorAll(".surtido-input").forEach(input => {
+    input.addEventListener("input", () => {
+      let total = 0;
+      modalBody.querySelectorAll(".surtido-input").forEach(i => {
+        let val = parseInt(i.value) || 0;
+        if (val < 0) val = 0;
+        if (val > parseInt(i.max)) val = parseInt(i.max);
+        i.value = val;
+        total += val;
+      });
+      totalSurtido.textContent = total;
+    });
+  });
+});
+
+// Agregar al lote
+document.getElementById("btn_agregar_modal").addEventListener("click", () => {
+  const inputs = document.querySelectorAll(".surtido-input");
+  let total = 0;
+  const fila = document.createElement("tr");
+  fila.setAttribute("data-color-id", colorActual);
+  fila.innerHTML = `<td class="fw-semibold">${colorNombre}</td>`;
+
+  tallasOrdenadas.forEach(t => {
+    const val = parseInt(document.querySelector(`[name='surtido_${t.id}']`)?.value) || 0;
+    total += val;
+    fila.innerHTML += `<td>${val}</td>`;
+  });
+
+  fila.innerHTML += `<td class="fw-bold text-primary">${total}</td>
+    <td><button class="btn btn-sm btn-outline-danger btn-eliminar">Eliminar</button></td>`;
+
+  if (total === 0) {
+    Swal.fire("Sin cantidades", "Debes surtir al menos una prenda.", "warning");
+    return;
+  }
+
+  document.getElementById("tabla_lote").appendChild(fila);
+  actualizarTotalGeneral();
+  document.querySelector(`#color option[value='${colorActual}']`).disabled = true;
+  document.getElementById("color").value = "";
+  btnVerInventario.disabled = true;
+
+  Swal.fire({
+    icon: "success",
+    title: "Color agregado al lote",
+    timer: 1000,
+    showConfirmButton: false
+  });
+
+  const modal = bootstrap.Modal.getInstance(document.getElementById("modalInventario"));
+  modal.hide();
+});
+
+// Eliminar fila
+document.getElementById("tabla_lote").addEventListener("click", (e) => {
+  if (e.target.classList.contains("btn-eliminar")) {
+    const fila = e.target.closest("tr");
+    const colorId = fila.getAttribute("data-color-id");
+    fila.remove();
+    document.querySelector(`#color option[value='${colorId}']`).disabled = false;
+    actualizarTotalGeneral();
+    Swal.fire({ icon: "info", title: "Color eliminado", timer: 900, showConfirmButton: false });
+  }
+});
+
+function actualizarTotalGeneral() {
+  let total = 0;
+  document.querySelectorAll("#tabla_lote tr").forEach(fila => {
+    const celdaTotal = fila.querySelector("td:nth-last-child(2)");
+    total += parseInt(celdaTotal.textContent) || 0;
+  });
+  document.getElementById("total_general").textContent = total;
+}
+
+// Enviar salida del lote
+document.getElementById("btn_dar_salida").addEventListener("click", async () => {
+  const filas = document.querySelectorAll("#tabla_lote tr");
+  if (filas.length === 0) {
+    Swal.fire("Sin datos", "No hay colores agregados al lote.", "warning");
+    return;
+  }
+
+  const pedidoNumero = document.querySelector("[name='pedido']").value.trim();
+  if (!pedidoNumero) {
+    Swal.fire("Falta número de pedido", "Debes ingresar un número o código de pedido.", "warning");
+    return;
+  }
+
+  const confirmacion = await Swal.fire({
+    title: "¿Dar salida al lote?",
+    text: `Pedido: ${pedidoNumero}`,
+    icon: "question",
+    showCancelButton: true,
+    confirmButtonText: "Sí, continuar",
+    cancelButtonText: "Cancelar"
+  });
+  if (!confirmacion.isConfirmed) return;
+
+  const datos = [];
+  filas.forEach(fila => {
+    const colorId = fila.getAttribute("data-color-id");
+    const celdas = fila.querySelectorAll("td");
+    tallasOrdenadas.forEach((t, index) => {
+      const cantidad = parseInt(celdas[index + 1].textContent) || 0;
+      if (cantidad > 0) {
+        datos.push({ color_id: parseInt(colorId), talla_id: t.id, cantidad });
+      }
+    });
+  });
+
+  const pedido = {
+    pedido_numero: pedidoNumero,
+    fecha: document.querySelector("[name='fecha']").value,
+    tipo_salida: document.querySelector("[name='tipo_salida']").value,
+    cliente: document.querySelector("[name='cliente']").value,
+    usuario: document.querySelector("[name='usuario']").value,
+    observaciones: document.querySelector("[name='observaciones']").value,
+    detalles: datos
+  };
+
+  const btn = document.getElementById("btn_dar_salida");
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Procesando...';
+
+  try {
+    const res = await fetch("/salida_lote", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(pedido)
+    });
+    const result = await res.json();
+
+    if (res.ok) {
+      // Limpiar tabla del lote
+      document.querySelectorAll("#tabla_lote tr").forEach(f => f.remove());
+
+      // Habilitar todos los colores
+      document.querySelectorAll("#color option").forEach(opt => opt.disabled = false);
+
+      // Reset: datos del pedido
+      document.querySelector("[name='cliente']").value = "";
+      document.querySelector("[name='observaciones']").value = "";
+      document.querySelector("[name='tipo_salida']").value = "Surtidas"; // reset al default
+      document.querySelector("[name='fecha']").value = "{{ fecha_hoy }}"; // reset a hoy
+      document.getElementById("color").value = "";
+      btnVerInventario.disabled = true;
+
+      // Reset totales
+      actualizarTotalGeneral();
+
+      // Obtener siguiente número de pedido desde el servidor
+      const respPedido = await fetch("/obtener_siguiente_pedido");
+      const dataPedido = await respPedido.json();
+      document.querySelector("[name='pedido']").value = dataPedido.siguiente_pedido;
+
+      // Mensaje final opcional
+      Swal.fire("Éxito", result.mensaje || "Lote registrado correctamente.", "success");
+
+    } else {
+      Swal.fire("Error", result.mensajes?.join("\n") || "Error desconocido.", "error");
+    }
+  } catch (err) {
+    Swal.fire("Error", "Error de conexión con el servidor.", "error");
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="bi bi-box-arrow-up-right"></i> Dar salida al lote';
+  }
+});
+</script>
+
+{% endblock %}

@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}Administración de Colores{% endblock %}
+
+{% block header %}
+<div class="d-flex align-items-center gap-2">
+  <i class="bi bi-palette fs-4 text-warning"></i>
+  <h4 class="mb-0">Administración de Colores</h4>
+</div>
+{% endblock %}
+
+{% block content %}
+<!-- Formulario para agregar color -->
+<div class="card p-4 shadow-sm border-0">
+  <h5 class="mb-3 text-secondary"><i class="bi bi-plus-circle me-1 text-success"></i> Agregar nuevo color</h5>
+  <form method="POST" action="{{ url_for('gestionar_colores') }}">
+    <div class="input-group">
+      <input type="text" class="form-control" name="nombre" placeholder="Nombre del Color" required>
+      <button class="btn btn-success" type="submit" data-bs-toggle="tooltip" title="Registrar color">
+        <i class="bi bi-plus-circle"></i> Agregar
+      </button>
+    </div>
+  </form>
+</div>
+
+<!-- Tabla de colores -->
+<div class="card mt-4 shadow-sm border-0">
+  <div class="card-header bg-light fw-semibold">
+    <i class="bi bi-list-ul me-1"></i> Lista de colores registrados
+  </div>
+  <div class="card-body p-0">
+    <table class="table table-hover align-middle mb-0">
+      <thead class="table-light">
+        <tr>
+          <th>🎨 Color</th>
+          <th class="text-center">⚙️ Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for c in colores %}
+        <tr>
+          <td>{{ c.nombre }}</td>
+          <td class="text-center">
+            <a href="{{ url_for('editar_color', id=c.id) }}" class="btn btn-sm btn-outline-primary me-2" data-bs-toggle="tooltip" title="Editar color">
+              <i class="bi bi-pencil"></i> Editar
+            </a>
+            <a href="{{ url_for('eliminar_color', id=c.id) }}" class="btn btn-sm btn-outline-danger"
+               onclick="return confirm('¿Seguro que deseas eliminar este color?')" data-bs-toggle="tooltip" title="Eliminar color">
+              <i class="bi bi-trash"></i> Eliminar
+            </a>
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="2" class="text-center text-muted py-4">
+            <i class="bi bi-emoji-frown me-1"></i> No hay colores registrados
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Activar tooltips -->
+<script>
+  const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+  [...tooltipTriggerList].map(el => new bootstrap.Tooltip(el));
+</script>
+{% endblock %}

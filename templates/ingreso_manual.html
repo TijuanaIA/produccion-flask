@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}Ingreso Manual al Inventario{% endblock %}
+{% block header %}📑Ingreso Manual al Inventario{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow-sm p-4">
+        <form method="POST">
+            <!-- Fecha -->
+            <div class="card shadow-sm mb-3 p-3 border-0 rounded-4">
+                <label for="fecha" class="form-label fs-6 fw-bold">📅 Fecha</label>
+                <input type="date" class="form-control form-control-lg" id="fecha" name="fecha" value="{{ fecha_hoy }}" required>
+            </div>
+
+            <!-- Color -->
+            <div class="card shadow-sm mb-3 p-3 border-0 rounded-4">
+                <label for="color" class="form-label fs-6 fw-bold">🎨 Color</label>
+                <select class="form-select form-select-lg" id="color" name="color" required>
+                    <option value="">-- Selecciona un color --</option>
+                    {% for c in colores %}
+                        <option value="{{ c.id }}">{{ c.nombre }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Tallas -->
+            <div class="card shadow-sm mb-3 p-3 border-0 rounded-4">
+                <label class="form-label fs-6 fw-bold">👕 Tallas</label>
+                <div class="d-flex flex-wrap gap-3">
+                    {% for t in tallas %}
+                        <div class="form-check form-check-inline">
+                            <input class="btn-check" type="checkbox" id="talla{{ t.id }}" name="tallas" value="{{ t.id }}">
+                            <label class="btn btn-outline-primary rounded-pill px-3" for="talla{{ t.id }}">
+                                {{ t.nombre }}
+                            </label>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <!-- Cantidad -->
+            <div class="card shadow-sm mb-3 p-3 border-0 rounded-4">
+                <label for="cantidad" class="form-label fs-6 fw-bold">📦 Cantidad por Talla</label>
+                <input type="number" class="form-control form-control-lg" id="cantidad" name="cantidad" min="1" required>
+            </div>
+            <!-- Observaciones -->
+            <div class="card shadow-sm mb-3 p-3 border-0 rounded-4">
+                <label for="observaciones" class="form-label fs-6 fw-bold">📝 Observaciones</label>
+                <textarea class="form-control form-control-lg" id="observaciones" name="observaciones" rows="2" placeholder="Opcional..."></textarea>
+            </div>
+            
+            <div class="text-center mt-3">
+                <button type="submit" class="btn btn-primary px-4">Registrar en Inventario</button>
+                <a href="{{ url_for('inventario_disponible') }}" class="btn btn-secondary px-4">Volver</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

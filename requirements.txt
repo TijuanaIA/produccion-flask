@@ -4,8 +4,8 @@ SQLAlchemy==2.0.30
 Werkzeug==3.0.1
 gunicorn==21.2.0
 python-dotenv==1.0.1
-pytz
-werkzeug.security
-utils
+pytz==2024.1
+werkzeug.security==3.0.1
+utils==1.0.1
 
 

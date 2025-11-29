@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>{% block title %}Sistema de Producción{% endblock %}</title>
 
     <!-- Bootstrap 5 -->
@@ -12,30 +12,48 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
 
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            width: 100%;
+        }
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: #f5f6fa;
+            display: flex;
+            flex-direction: column;
+            padding-bottom: 80px;
         }
 
-        /* Sidebar */
+        /* ===== ESCRITORIO (por defecto) ===== */
         .sidebar {
             height: 100vh;
             background: #1e1f29;
             color: #fff;
             position: fixed;
+            left: 0;
+            top: 0;
             width: 250px;
             padding: 20px 15px;
             display: flex;
             flex-direction: column;
             box-shadow: 2px 0 12px rgba(0,0,0,0.15);
-            z-index: 1030; /* 🔧 MODIFICADO: para que esté sobre el contenido */
+            z-index: 1030;
+            overflow-y: auto;
         }
 
-        .sidebar h4 {
+        .sidebar h3 {
             font-weight: bold;
-            margin-bottom: 40px;
+            margin-bottom: 30px;
             text-align: center;
             color: #0d6efd;
+            font-size: 18px;
         }
 
         .sidebar a {
@@ -46,47 +64,61 @@
             gap: 12px;
             padding: 12px 15px;
             border-radius: 10px;
-            transition: all 0.3s;
-            font-size: 15px;
-            margin-bottom: 8px;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            margin-bottom: 6px;
+            white-space: nowrap;
         }
 
         .sidebar a:hover {
             background-color: rgba(13, 110, 253, 0.15);
             color: #fff;
+            transform: translateX(5px);
         }
 
-        .sidebar .active {
+        .sidebar a.active {
             background-color: #0d6efd;
             color: #fff;
             font-weight: 600;
+        }
+
+        .sidebar hr {
+            background-color: rgba(255, 255, 255, 0.15);
+            margin: 10px 0;
         }
 
         /* Contenido */
         .content {
             margin-left: 250px;
             padding: 20px;
-            transition: margin-left 0.3s ease;
+            flex: 1;
+            overflow-y: auto;
         }
 
-        /* Header */
+        /* Header/Topbar */
         .topbar {
             background: #fff;
             border-radius: 12px;
             box-shadow: 0 2px 12px rgba(0,0,0,0.1);
-            padding: 15px 25px;
-            margin-bottom: 25px;
+            padding: 15px 20px;
+            margin-bottom: 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            flex-wrap: wrap; /* 🔧 MODIFICADO: permite que los elementos se acomoden en móviles */
-            gap: 10px; /* 🔧 MODIFICADO: espacio entre elementos en móviles */
+            flex-wrap: wrap;
+            gap: 10px;
         }
 
         .topbar h5 {
             font-weight: 600;
             color: #343a40;
             margin: 0;
+            font-size: 20px;
+        }
+
+        .topbar span {
+            font-size: 13px;
+            color: #6c757d;
         }
 
         /* Dashboard Cards */
@@ -106,21 +138,30 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card-dashboard:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.12);
         }
 
         .card-dashboard h6 {
             font-size: 14px;
             opacity: 0.9;
+            margin: 0;
         }
 
         .card-dashboard h3 {
             font-weight: bold;
-            margin: 0;
+            margin: 8px 0 0 0;
+            font-size: 28px;
         }
 
         .bg-cortes { background: linear-gradient(135deg, #0d6efd, #6ea8fe); }
         .bg-inventario { background: linear-gradient(135deg, #198754, #5bc9a3); }
-        .bg-ventas { background: linear-gradient(135deg, #ffc107, #ffd966); }
+        .bg-ventas { background: linear-gradient(135deg, #ffc107, #ffd966); color: #333 !important; }
+        .bg-ventas h6, .bg-ventas h3 { color: inherit !important; }
         .bg-otros { background: linear-gradient(135deg, #6f42c1, #b37feb); }
 
         /* Tablas modernas */
@@ -128,99 +169,210 @@
             background: #fff;
             border-radius: 12px;
             box-shadow: 0 2px 12px rgba(0,0,0,0.08);
-            overflow-x: auto; /* 🔧 MODIFICADO: permite scroll horizontal en móviles */
+            padding: 20px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .table-modern h5 {
+            margin-bottom: 15px;
+            font-weight: 600;
+            color: #343a40;
+        }
+
+        .table-modern table {
+            margin-bottom: 0;
         }
 
         .table-modern th {
             background: #f8f9fa;
             font-weight: 600;
+            border-bottom: 2px solid #dee2e6;
         }
 
         /* Flash messages */
         .flash-container .alert {
             border-radius: 12px;
-            font-size: 15px;
+            font-size: 14px;
+            border: none;
+            margin-bottom: 15px;
         }
 
-        /* 🔧 NUEVO: Responsividad para tablets y móviles */
-        @media (max-width: 768px) {
+        /* ===== MEDIA QUERIES: TABLET ===== */
+        @media (max-width: 1024px) {
             .sidebar {
-                position: relative;
-                width: 100%;
-                height: auto;
-                flex-direction: row;
-                flex-wrap: wrap;
-                padding: 10px;
-                margin-bottom: 15px;
-            }
-
-            .sidebar h4 {
-                width: 100%;
-                margin-bottom: 15px;
-            }
-
-            .sidebar a {
-                flex: 1 1 45%;
-                justify-content: center;
-                font-size: 14px;
-                padding: 10px;
-            }
-
-            .sidebar hr {
-                flex: 1 1 100%;
-                margin: 5px 0;
+                width: 220px;
             }
 
             .content {
-                margin-left: 0;
-                padding: 12px;
+                margin-left: 220px;
+                padding: 15px;
             }
 
-            .topbar {
+            .dashboard-cards {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 15px;
+            }
+        }
+
+        /* ===== MEDIA QUERIES: DISPOSITIVOS MÓVILES ===== */
+        @media (max-width: 768px) {
+            body {
+                padding-bottom: 85px;
+            }
+
+            /* Sidebar como barra inferior de navegación */
+            .sidebar {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                top: auto;
+                height: auto;
+                width: 100%;
+                padding: 0;
+                flex-direction: row;
+                flex-wrap: wrap;
+                align-items: stretch;
+                background: #fff;
+                border-top: 2px solid #e9ecef;
+                box-shadow: 0 -2px 12px rgba(0,0,0,0.1);
+                z-index: 1050;
+                overflow-y: visible;
+            }
+
+            .sidebar h3 {
+                display: none;
+            }
+
+            .sidebar hr {
+                display: none;
+            }
+
+            .sidebar a {
+                flex: 1;
+                flex-basis: calc(20% - 1px);
+                padding: 10px 5px;
+                margin: 0;
+                color: #6c757d;
                 flex-direction: column;
-                align-items: flex-start;
+                justify-content: center;
+                align-items: center;
+                gap: 4px;
+                font-size: 11px;
+                border-radius: 0;
+                text-align: center;
+                border-right: 1px solid #e9ecef;
+                transition: all 0.3s ease;
+            }
+
+            .sidebar a:last-child {
+                border-right: none;
+            }
+
+            .sidebar a:hover {
+                background-color: #f8f9fa;
+                transform: none;
+            }
+
+            .sidebar a.active {
+                background-color: #e7f1ff;
+                color: #0d6efd;
+                font-weight: 600;
+            }
+
+            .sidebar a i {
+                font-size: 20px !important;
+            }
+
+            /* Contenido */
+            .content {
+                margin-left: 0;
+                padding: 12px;
+                padding-bottom: 20px;
+            }
+
+            /* Topbar */
+            .topbar {
                 padding: 12px 15px;
+                margin-bottom: 15px;
+                border-radius: 10px;
             }
 
             .topbar h5 {
                 font-size: 18px;
             }
 
-            .dashboard-cards {
-                grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-                gap: 15px;
+            .topbar span {
+                font-size: 12px;
             }
 
+            /* Dashboard Cards */
+            .dashboard-cards {
+                grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+                gap: 12px;
+                margin-bottom: 15px;
+            }
+
+            .card-dashboard {
+                padding: 15px;
+                border-radius: 12px;
+            }
+
+            .card-dashboard h6 {
+                font-size: 12px;
+            }
+
+            .card-dashboard h3 {
+                font-size: 1.5rem;
+                margin-top: 5px;
+            }
+
+            .card-dashboard i {
+                font-size: 1.5rem !important;
+            }
+
+            /* Tabla */
             .table-modern {
-                padding: 12px !important;
-                border-radius: 8px;
+                padding: 12px;
+                border-radius: 10px;
             }
 
             .table-modern h5 {
-                font-size: 16px;
+                font-size: 15px;
+            }
+
+            .table-modern table {
+                font-size: 13px;
+            }
+
+            .table-modern th,
+            .table-modern td {
+                padding: 8px 6px !important;
+            }
+
+            /* Flash messages */
+            .alert {
+                padding: 10px 12px;
+                font-size: 12px;
+                margin-bottom: 10px;
             }
         }
 
-        /* 🔧 Responsividad para celulares pequeños */
-        @media (max-width: 576px) {
+        /* ===== MEDIA QUERIES: CELULARES PEQUEÑOS ===== */
+        @media (max-width: 480px) {
             body {
-                font-size: 14px;
-            }
-
-            .sidebar {
-                padding: 8px;
-            }
-
-            .sidebar h4 {
-                font-size: 16px;
-                margin-bottom: 10px;
+                padding-bottom: 85px;
             }
 
             .sidebar a {
-                flex: 1 1 50%;
-                padding: 8px 5px;
-                font-size: 12px;
-                gap: 5px;
+                flex-basis: calc(25% - 1px);
+                font-size: 10px;
+                padding: 8px 4px;
+            }
+
+            .sidebar a i {
+                font-size: 18px !important;
             }
 
             .content {
@@ -229,26 +381,21 @@
 
             .topbar {
                 padding: 10px 12px;
-                margin-bottom: 15px;
+                flex-direction: column;
+                align-items: flex-start;
             }
 
             .topbar h5 {
                 font-size: 16px;
             }
 
-            .topbar span {
-                font-size: 12px;
-            }
-
             .dashboard-cards {
                 grid-template-columns: repeat(2, 1fr);
                 gap: 10px;
-                margin-bottom: 15px;
             }
 
             .card-dashboard {
                 padding: 12px;
-                border-radius: 10px;
             }
 
             .card-dashboard h6 {
@@ -256,47 +403,79 @@
             }
 
             .card-dashboard h3 {
-                font-size: 1.2rem;
+                font-size: 1.3rem;
             }
 
             .table-modern {
-                padding: 10px !important;
-            }
-
-            .table-modern h5 {
-                font-size: 15px;
-                margin-bottom: 12px;
-            }
-
-            .alert {
                 padding: 10px;
-                font-size: 13px;
+            }
+
+            .table-modern th,
+            .table-modern td {
+                padding: 6px 4px !important;
+                font-size: 12px;
             }
         }
     </style>
 </head>
 <body>
 
+    <!-- Sidebar/Navegación -->
     <div class="sidebar">
-        <h3>🧵 Producción</h3><br><br>
+        <h3>🧵 Producción</h3>
 
-        <a href="{{ url_for('inicio') }}">🏠 Inicio</a>
-        <hr class="text-white">
-        <a href="{{ url_for('gestionar_colores') }}"><i class="bi bi-palette"></i> Colores</a>
+        <a href="{{ url_for('inicio') }}" title="Inicio">
+            <i class="bi bi-house-fill"></i>
+            <span>Inicio</span>
+        </a>
 
-        <hr class="text-white">
-        <a href="{{ url_for('ingreso_manual') }}"><i class="bi bi-boxes"></i> Ingreso Manual</a>
-        <a href="{{ url_for('inventario_disponible') }}"><i class="bi bi-boxes"></i> Inventario Disponible</a>
-        <a href="{{ url_for('inventario_general') }}"><i class="bi bi-boxes"></i> Inventario General</a> 
-        <a href="{{ url_for('inventario_dashboard') }}"><i class="bi bi-boxes"></i> Consulta de Inventario</a>
-        <a href="{{ url_for('surtido') }}"><i class="bi bi-boxes"></i> Ventana de Surtido</a>
-        <a href="{{ url_for('ver_pedidos') }}"><i class="bi bi-boxes"></i> Ventana de Pedidos</a>
-        <a href="{{ url_for('ver_historial_inventario') }}"><i class="bi bi-boxes"></i> Historial de Movimientos </a>
-        <hr class="text-white">
-        <a href="{{ url_for('logout') }}"><i class="bi bi-box-arrow-right"></i> Salir</a>
+        <a href="{{ url_for('gestionar_colores') }}" title="Colores">
+            <i class="bi bi-palette-fill"></i>
+            <span>Colores</span>
+        </a>
+
+        <a href="{{ url_for('ingreso_manual') }}" title="Ingreso Manual">
+            <i class="bi bi-inbox-fill"></i>
+            <span>Ingreso</span>
+        </a>
+
+        <a href="{{ url_for('inventario_disponible') }}" title="Inventario Disponible">
+            <i class="bi bi-box-seam"></i>
+            <span>Disponible</span>
+        </a>
+
+        <a href="{{ url_for('inventario_general') }}" title="Inventario General">
+            <i class="bi bi-boxes"></i>
+            <span>Inventario</span>
+        </a>
+
+        <a href="{{ url_for('inventario_dashboard') }}" title="Consulta de Inventario">
+            <i class="bi bi-graph-up"></i>
+            <span>Consulta</span>
+        </a>
+
+        <a href="{{ url_for('surtido') }}" title="Ventana de Surtido">
+            <i class="bi bi-cart-check-fill"></i>
+            <span>Surtido</span>
+        </a>
+
+        <a href="{{ url_for('ver_pedidos') }}" title="Ventana de Pedidos">
+            <i class="bi bi-clipboard-check"></i>
+            <span>Pedidos</span>
+        </a>
+
+        <a href="{{ url_for('ver_historial_inventario') }}" title="Historial de Movimientos">
+            <i class="bi bi-clock-history"></i>
+            <span>Historial</span>
+        </a>
+
+        <a href="{{ url_for('logout') }}" title="Salir">
+            <i class="bi bi-box-arrow-right"></i>
+            <span>Salir</span>
+        </a>
     </div>
 
-    <!-- Contenido -->
+    <!-- Contenido Principal -->
     <div class="content">
 
         <!-- Header -->
@@ -319,12 +498,27 @@
             {% endwith %}
         </div>
 
-        <!-- 🔹 Bloque para inyectar contenido de cada página -->
+        <!-- Bloque de contenido -->
         {% block content %}{% endblock %}
     </div>
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // Script para marcar la ruta activa
+        document.addEventListener('DOMContentLoaded', function() {
+            const links = document.querySelectorAll('.sidebar a');
+            const currentPath = window.location.pathname;
+            
+            links.forEach(link => {
+                const href = link.getAttribute('href');
+                if (currentPath.includes(href.replace('/', ''))) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
 </body>
 </html>
 

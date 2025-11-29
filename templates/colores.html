@@ -4,33 +4,387 @@
 
 {% block header %}
 <div class="d-flex align-items-center gap-2">
-  <i class="bi bi-palette fs-4 text-warning"></i>
+  <i class="bi bi-palette-fill fs-4 text-warning"></i>
   <h4 class="mb-0">Administración de Colores</h4>
 </div>
 {% endblock %}
 
 {% block content %}
+<style>
+  /* ===== ESTILOS RESPONSIVOS PARA COLORES ===== */
+  
+  /* Formulario */
+  .color-form-container {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    padding: 20px;
+    margin-bottom: 25px;
+    border: none;
+  }
+
+  .color-form-container h5 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #343a40;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .color-form-container .input-group {
+    display: flex;
+    gap: 8px;
+  }
+
+  .color-form-container .form-control {
+    flex: 1;
+    padding: 10px 12px;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: border-color 0.3s ease;
+  }
+
+  .color-form-container .form-control:focus {
+    outline: none;
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.1);
+  }
+
+  .color-form-container .btn {
+    padding: 10px 16px;
+    font-weight: 500;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+  }
+
+  .color-form-container .btn-success {
+    background: #198754;
+    border: none;
+    color: #fff;
+  }
+
+  .color-form-container .btn-success:hover {
+    background: #157347;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(25, 135, 84, 0.3);
+  }
+
+  /* Tabla/Lista de colores */
+  .colors-list-container {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    overflow: hidden;
+    border: none;
+  }
+
+  .colors-list-header {
+    background: #f8f9fa;
+    padding: 15px 20px;
+    font-weight: 600;
+    color: #343a40;
+    border-bottom: 2px solid #e9ecef;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 15px;
+  }
+
+  .colors-list-body {
+    padding: 0;
+  }
+
+  /* Tabla en escritorio */
+  .table-colors {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0;
+  }
+
+  .table-colors thead {
+    background: #f8f9fa;
+    border-bottom: 2px solid #e9ecef;
+  }
+
+  .table-colors th {
+    padding: 12px 15px;
+    text-align: left;
+    font-weight: 600;
+    color: #495057;
+    font-size: 13px;
+    text-transform: uppercase;
+  }
+
+  .table-colors tbody tr {
+    border-bottom: 1px solid #e9ecef;
+    transition: background-color 0.2s ease;
+  }
+
+  .table-colors tbody tr:hover {
+    background-color: #f8f9fa;
+  }
+
+  .table-colors td {
+    padding: 14px 15px;
+    color: #495057;
+    font-size: 14px;
+  }
+
+  .table-colors td.text-center {
+    text-align: center;
+  }
+
+  /* Botones de acciones */
+  .btn-action {
+    padding: 6px 10px;
+    font-size: 12px;
+    border-radius: 6px;
+    border: 1px solid #dee2e6;
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.3s ease;
+    margin: 0 2px;
+  }
+
+  .btn-action i {
+    margin-right: 4px;
+  }
+
+  .btn-edit {
+    color: #0d6efd;
+    border-color: #0d6efd;
+    background: transparent;
+  }
+
+  .btn-edit:hover {
+    background: #0d6efd;
+    color: #fff;
+  }
+
+  .btn-delete {
+    color: #dc3545;
+    border-color: #dc3545;
+    background: transparent;
+  }
+
+  .btn-delete:hover {
+    background: #dc3545;
+    color: #fff;
+  }
+
+  .empty-message {
+    text-align: center;
+    color: #6c757d;
+    padding: 40px 20px;
+    font-size: 14px;
+  }
+
+  .empty-message i {
+    font-size: 32px;
+    color: #ccc;
+    display: block;
+    margin-bottom: 10px;
+  }
+
+  /* ===== MEDIA QUERIES: TABLET ===== */
+  @media (max-width: 768px) {
+    .color-form-container {
+      padding: 15px;
+      margin-bottom: 20px;
+    }
+
+    .color-form-container h5 {
+      font-size: 15px;
+      margin-bottom: 12px;
+    }
+
+    .color-form-container .input-group {
+      gap: 6px;
+    }
+
+    .color-form-container .form-control {
+      padding: 9px 10px;
+      font-size: 13px;
+    }
+
+    .color-form-container .btn {
+      padding: 9px 12px;
+      font-size: 13px;
+    }
+
+    .colors-list-header {
+      padding: 12px 15px;
+      font-size: 14px;
+    }
+
+    .table-colors th,
+    .table-colors td {
+      padding: 10px 12px;
+      font-size: 13px;
+    }
+
+    .btn-action {
+      padding: 5px 8px;
+      font-size: 11px;
+    }
+  }
+
+  /* ===== MEDIA QUERIES: CELULARES ===== */
+  @media (max-width: 480px) {
+    .color-form-container {
+      padding: 12px;
+      margin-bottom: 15px;
+    }
+
+    .color-form-container h5 {
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+
+    .color-form-container .input-group {
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .color-form-container .form-control {
+      width: 100%;
+      padding: 10px 12px;
+      font-size: 14px;
+    }
+
+    .color-form-container .btn {
+      width: 100%;
+      padding: 10px;
+      font-size: 14px;
+    }
+
+    .colors-list-container {
+      border-radius: 8px;
+    }
+
+    .colors-list-header {
+      padding: 12px 12px;
+      font-size: 13px;
+    }
+
+    /* Convertir tabla a tarjetas en móvil */
+    .table-colors {
+      display: block;
+    }
+
+    .table-colors thead {
+      display: none;
+    }
+
+    .table-colors tbody {
+      display: block;
+    }
+
+    .table-colors tr {
+      display: block;
+      background: #fff;
+      border: 1px solid #e9ecef;
+      border-radius: 8px;
+      margin-bottom: 12px;
+      padding: 12px;
+      overflow: hidden;
+    }
+
+    .table-colors tr:hover {
+      background-color: #fff;
+      border-color: #0d6efd;
+    }
+
+    .table-colors td {
+      display: block;
+      padding: 8px 0;
+      border: none;
+      text-align: right;
+      position: relative;
+      padding-left: 40%;
+    }
+
+    .table-colors td:first-child {
+      text-align: left;
+      padding-left: 0;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #e9ecef;
+      font-weight: 600;
+      color: #343a40;
+    }
+
+    .table-colors td:before {
+      content: attr(data-label);
+      position: absolute;
+      left: 0;
+      font-weight: 600;
+      color: #6c757d;
+      font-size: 12px;
+    }
+
+    .table-colors td.text-center {
+      text-align: right;
+    }
+
+    .table-colors td.text-center:before {
+      display: none;
+    }
+
+    .btn-action {
+      display: inline-block;
+      padding: 6px 10px;
+      font-size: 12px;
+      margin-right: 6px;
+      margin-bottom: 4px;
+    }
+
+    .btn-action:last-child {
+      margin-right: 0;
+    }
+
+    .empty-message {
+      padding: 30px 15px;
+      font-size: 13px;
+    }
+
+    .empty-message i {
+      font-size: 28px;
+      margin-bottom: 8px;
+    }
+  }
+</style>
+
 <!-- Formulario para agregar color -->
-<div class="card p-4 shadow-sm border-0">
-  <h5 class="mb-3 text-secondary"><i class="bi bi-plus-circle me-1 text-success"></i> Agregar nuevo color</h5>
+<div class="color-form-container">
+  <h5>
+    <i class="bi bi-plus-circle text-success"></i>
+    Agregar nuevo color
+  </h5>
   <form method="POST" action="{{ url_for('gestionar_colores') }}">
     <div class="input-group">
       <input type="text" class="form-control" name="nombre" placeholder="Nombre del Color" required>
       <button class="btn btn-success" type="submit" data-bs-toggle="tooltip" title="Registrar color">
-        <i class="bi bi-plus-circle"></i> Agregar
+        <i class="bi bi-plus-circle"></i>
+        <span class="d-none d-sm-inline">Agregar</span>
       </button>
     </div>
   </form>
 </div>
 
-<!-- Tabla de colores -->
-<div class="card mt-4 shadow-sm border-0">
-  <div class="card-header bg-light fw-semibold">
-    <i class="bi bi-list-ul me-1"></i> Lista de colores registrados
+<!-- Lista de colores -->
+<div class="colors-list-container">
+  <div class="colors-list-header">
+    <i class="bi bi-list-ul"></i>
+    Lista de colores registrados
   </div>
-  <div class="card-body p-0">
-    <table class="table table-hover align-middle mb-0">
-      <thead class="table-light">
+  <div class="colors-list-body">
+    {% if colores %}
+    <table class="table-colors">
+      <thead>
         <tr>
           <th>🎨 Color</th>
           <th class="text-center">⚙️ Acciones</th>
@@ -39,32 +393,36 @@
       <tbody>
         {% for c in colores %}
         <tr>
-          <td>{{ c.nombre }}</td>
-          <td class="text-center">
-            <a href="{{ url_for('editar_color', id=c.id) }}" class="btn btn-sm btn-outline-primary me-2" data-bs-toggle="tooltip" title="Editar color">
-              <i class="bi bi-pencil"></i> Editar
+          <td data-label="Color">{{ c.nombre }}</td>
+          <td class="text-center" data-label="Acciones">
+            <a href="{{ url_for('editar_color', id=c.id) }}" class="btn-action btn-edit" data-bs-toggle="tooltip" title="Editar color">
+              <i class="bi bi-pencil"></i>
+              <span class="d-none d-md-inline">Editar</span>
             </a>
-            <a href="{{ url_for('eliminar_color', id=c.id) }}" class="btn btn-sm btn-outline-danger"
+            <a href="{{ url_for('eliminar_color', id=c.id) }}" class="btn-action btn-delete"
                onclick="return confirm('¿Seguro que deseas eliminar este color?')" data-bs-toggle="tooltip" title="Eliminar color">
-              <i class="bi bi-trash"></i> Eliminar
+              <i class="bi bi-trash"></i>
+              <span class="d-none d-md-inline">Eliminar</span>
             </a>
-          </td>
-        </tr>
-        {% else %}
-        <tr>
-          <td colspan="2" class="text-center text-muted py-4">
-            <i class="bi bi-emoji-frown me-1"></i> No hay colores registrados
           </td>
         </tr>
         {% endfor %}
       </tbody>
     </table>
+    {% else %}
+    <div class="empty-message">
+      <i class="bi bi-emoji-frown"></i>
+      <p>No hay colores registrados</p>
+    </div>
+    {% endif %}
   </div>
 </div>
 
 <!-- Activar tooltips -->
 <script>
-  const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
-  [...tooltipTriggerList].map(el => new bootstrap.Tooltip(el));
+  document.addEventListener('DOMContentLoaded', function() {
+    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+    [...tooltipTriggerList].map(el => new bootstrap.Tooltip(el));
+  });
 </script>
 {% endblock %}

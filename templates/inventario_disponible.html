@@ -4,6 +4,102 @@
 
 {% block content %}
 
+<style>
+  /* Scroll fix: espacio para el menú inferior en mobile */
+  @media (max-width: 780px) {
+    .content {
+      overflow-y: auto !important;
+      -webkit-overflow-scrolling: touch !important;
+      padding-bottom: 160px !important;
+    }
+  }
+
+  /* Accordion body con scroll limitado */
+  .accordion-body {
+    max-height: calc(100vh - 240px);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Tabla responsiva */
+  .table {
+    font-size: 13px;
+  }
+
+  .table thead {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+  }
+
+  /* Mobile: tabla se convierte en cards */
+  @media (max-width: 420px) {
+    .table, .table thead, .table tbody, .table tr, .table th, .table td {
+      display: block;
+      width: 100%;
+    }
+
+    .table thead {
+      display: none;
+    }
+
+    .table tbody tr {
+      margin-bottom: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .table td {
+      padding: 8px;
+      text-align: left;
+      border: none;
+      position: relative;
+      padding-left: 40%;
+    }
+
+    .table td:before {
+      content: attr(data-label);
+      position: absolute;
+      left: 0;
+      width: 35%;
+      padding: 8px;
+      font-weight: 600;
+      background-color: #f8f9fa;
+      border-right: 1px solid #ddd;
+    }
+
+    .table td:first-child {
+      padding-top: 12px;
+    }
+
+    .table td:last-child {
+      padding-bottom: 12px;
+    }
+
+    .btn-sm {
+      padding: 4px 6px;
+      font-size: 11px;
+    }
+  }
+
+  /* Tablet: tabla responsiva con scroll horizontal si es necesario */
+  @media (max-width: 768px) and (min-width: 421px) {
+    .table {
+      font-size: 12px;
+    }
+
+    .table th, .table td {
+      padding: 6px 4px;
+    }
+
+    .btn-sm {
+      padding: 4px 8px;
+      font-size: 12px;
+    }
+  }
+</style>
+
 <!-- Barra de filtros -->
 <form class="row g-2 mb-3" method="GET" action="{{ url_for('inventario_disponible') }}">
   <div class="col-6 col-md-2">
@@ -75,17 +171,17 @@
               <tbody>
                 {% for inv in inventarios_color %}
                   <tr>
-                    <td>{{ inv.talla.nombre }}</td>
-                    <td>
+                    <td data-label="👕 Talla">{{ inv.talla.nombre }}</td>
+                    <td data-label="📦 Cantidad">
                       {% if inv.cantidad < 0 %}
                         <span class="text-danger fw-bold">{{ inv.cantidad }}</span>
                       {% else %}
                         {{ inv.cantidad }}
                       {% endif %}
                     </td>
-                    <td>{{ inv.status.nombre }}</td>
-                    <td>{{ inv.fecha.strftime('%d/%m/%Y %H:%M') }}</td>
-                    <td>
+                    <td data-label="📌 Estado">{{ inv.status.nombre }}</td>
+                    <td data-label="📅 Fecha">{{ inv.fecha.strftime('%d/%m/%Y %H:%M') }}</td>
+                    <td data-label="⚙️ Acciones">
                       <!-- Botón que abre el modal -->
                       <button class="btn btn-sm btn-outline-primary"
                               data-bs-toggle="modal"

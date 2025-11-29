@@ -218,7 +218,7 @@
         /* ===== MEDIA QUERIES: DISPOSITIVOS MÓVILES ===== */
         @media (max-width: 768px) {
             body {
-                padding-bottom: 85px;
+                padding-bottom: 0;
             }
 
             /* Sidebar como barra inferior de navegación */
@@ -289,7 +289,12 @@
             .content {
                 margin-left: 0;
                 padding: 12px;
-                padding-bottom: 20px;
+                padding-bottom: 110px;
+                overflow-y: auto;
+                overflow-x: hidden;
+                -webkit-overflow-scrolling: touch;
+                flex: 1 1 auto;
+                display: block;
             }
 
             /* Topbar */

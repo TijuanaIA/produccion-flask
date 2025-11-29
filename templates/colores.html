@@ -10,6 +10,75 @@
 {% endblock %}
 
 {% block content %}
+<style>
+  /* Optimización para tabla de colores en móviles */
+  @media (max-width: 768px) {
+    /* Asegurar que el contenedor raíz permite scroll */
+    .content {
+      overflow-y: scroll !important;
+      -webkit-overflow-scrolling: touch !important;
+      padding-bottom: 120px !important;
+    }
+    
+    .card {
+      margin-bottom: 15px;
+      border: none;
+      break-inside: avoid;
+    }
+    
+    .card:last-child {
+      margin-bottom: 20px;
+    }
+    
+    .card-body {
+      padding: 0;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    
+    .card-header {
+      padding: 12px 16px;
+      font-size: 14px;
+    }
+    
+    .table {
+      font-size: 13px;
+      margin-bottom: 0;
+      width: 100%;
+    }
+    
+    .table thead {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    
+    .table tbody tr {
+      break-inside: avoid;
+    }
+    
+    .btn-sm {
+      padding: 5px 10px;
+      font-size: 12px;
+      display: inline-block;
+    }
+    
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    
+    .input-group .form-control,
+    .input-group .btn {
+      width: 100%;
+    }
+    
+    .card.p-4 {
+      padding: 15px !important;
+    }
+  }
+</style>
 <!-- Formulario para agregar color -->
 <div class="card p-4 shadow-sm border-0">
   <h5 class="mb-3 text-secondary"><i class="bi bi-plus-circle me-1 text-success"></i> Agregar nuevo color</h5>

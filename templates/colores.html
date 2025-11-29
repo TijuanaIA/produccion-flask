@@ -11,408 +11,405 @@
 
 {% block content %}
 <style>
-  /* ===== ESTILOS RESPONSIVOS PARA COLORES ===== */
+  /* ===== ESTILOS PARA CELULARES PEQUEÑOS (400-780px) ===== */
   
-  /* Formulario */
-  .color-form-container {
+  .colores-container {
+    padding-bottom: 20px;
+  }
+
+  /* === FORMULARIO === */
+  .color-form-card {
     background: #fff;
     border-radius: 12px;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
-    padding: 20px;
-    margin-bottom: 25px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    padding: 16px;
+    margin-bottom: 18px;
     border: none;
   }
 
-  .color-form-container h5 {
-    font-size: 16px;
+  .color-form-card h5 {
+    font-size: 14px;
     font-weight: 600;
-    color: #343a40;
-    margin-bottom: 15px;
+    color: #2c3e50;
+    margin-bottom: 12px;
     display: flex;
     align-items: center;
     gap: 8px;
   }
 
-  .color-form-container .input-group {
+  .color-form-card i {
+    font-size: 16px;
+  }
+
+  .color-form-card form {
     display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .color-form-card .input-group {
+    display: flex;
+    flex-direction: column;
     gap: 8px;
   }
 
-  .color-form-container .form-control {
-    flex: 1;
+  .color-form-card .form-control {
     padding: 10px 12px;
-    border: 2px solid #e9ecef;
+    border: 2px solid #e0e0e0;
     border-radius: 8px;
     font-size: 14px;
-    transition: border-color 0.3s ease;
+    font-family: inherit;
+    transition: all 0.3s ease;
   }
 
-  .color-form-container .form-control:focus {
+  .color-form-card .form-control:focus {
     outline: none;
     border-color: #0d6efd;
     box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.1);
   }
 
-  .color-form-container .btn {
-    padding: 10px 16px;
+  .color-form-card .form-control::placeholder {
+    color: #999;
+  }
+
+  .color-form-card .btn-success {
+    padding: 10px 14px;
+    font-size: 14px;
     font-weight: 500;
-    border-radius: 8px;
-    transition: all 0.3s ease;
-    white-space: nowrap;
-  }
-
-  .color-form-container .btn-success {
-    background: #198754;
     border: none;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #198754, #15693a);
     color: #fff;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    width: 100%;
   }
 
-  .color-form-container .btn-success:hover {
-    background: #157347;
+  .color-form-card .btn-success:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(25, 135, 84, 0.3);
+    background: linear-gradient(135deg, #157347, #0d4620);
   }
 
-  /* Tabla/Lista de colores */
-  .colors-list-container {
+  .color-form-card .btn-success:active {
+    transform: translateY(0);
+  }
+
+  .color-form-card .btn-success i {
+    margin-right: 6px;
+  }
+
+  /* === LISTA DE COLORES === */
+  .colores-list-card {
     background: #fff;
     border-radius: 12px;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
     overflow: hidden;
     border: none;
   }
 
-  .colors-list-header {
-    background: #f8f9fa;
-    padding: 15px 20px;
+  .colores-list-header {
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    padding: 14px 16px;
     font-weight: 600;
-    color: #343a40;
-    border-bottom: 2px solid #e9ecef;
+    color: #2c3e50;
+    font-size: 14px;
+    border-bottom: 2px solid #e0e0e0;
     display: flex;
     align-items: center;
     gap: 8px;
-    font-size: 15px;
   }
 
-  .colors-list-body {
-    padding: 0;
+  .colores-list-header i {
+    font-size: 16px;
   }
 
-  /* Tabla en escritorio */
-  .table-colors {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 0;
+  /* Convertir tabla a tarjetas en móvil */
+  .colores-table {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
   }
 
-  .table-colors thead {
+  .colores-table thead {
+    display: none;
+  }
+
+  .colores-table tbody {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .colores-table tr {
+    display: flex;
+    flex-direction: column;
+    padding: 14px 16px;
+    border-bottom: 1px solid #f0f0f0;
+    transition: all 0.2s ease;
+    background: #fff;
+  }
+
+  .colores-table tr:last-child {
+    border-bottom: none;
+  }
+
+  .colores-table tr:hover {
     background: #f8f9fa;
-    border-bottom: 2px solid #e9ecef;
+    border-left: 4px solid #0d6efd;
+    padding-left: 12px;
   }
 
-  .table-colors th {
-    padding: 12px 15px;
-    text-align: left;
-    font-weight: 600;
-    color: #495057;
-    font-size: 13px;
-    text-transform: uppercase;
-  }
-
-  .table-colors tbody tr {
-    border-bottom: 1px solid #e9ecef;
-    transition: background-color 0.2s ease;
-  }
-
-  .table-colors tbody tr:hover {
-    background-color: #f8f9fa;
-  }
-
-  .table-colors td {
-    padding: 14px 15px;
-    color: #495057;
+  .colores-table td {
+    padding: 0;
+    margin: 0;
     font-size: 14px;
+    display: flex;
+    align-items: center;
+    padding-bottom: 10px;
   }
 
-  .table-colors td.text-center {
-    text-align: center;
+  .colores-table td:last-child {
+    padding-bottom: 0;
+    border-top: 1px solid #f0f0f0;
+    padding-top: 10px;
+    margin-top: 8px;
+  }
+
+  .colores-table td:first-child {
+    color: #2c3e50;
+    font-weight: 600;
+    font-size: 15px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #f0f0f0;
+  }
+
+  .colores-table td:first-child:before {
+    content: "🎨 ";
+    margin-right: 6px;
   }
 
   /* Botones de acciones */
-  .btn-action {
-    padding: 6px 10px;
+  .acciones-grupo {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .btn-color-action {
+    flex: 1;
+    padding: 8px 10px;
     font-size: 12px;
+    border: 2px solid;
     border-radius: 6px;
-    border: 1px solid #dee2e6;
     text-decoration: none;
-    display: inline-block;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
     transition: all 0.3s ease;
-    margin: 0 2px;
+    font-weight: 500;
+    min-width: 80px;
   }
 
-  .btn-action i {
-    margin-right: 4px;
-  }
-
-  .btn-edit {
-    color: #0d6efd;
+  .btn-editar {
     border-color: #0d6efd;
+    color: #0d6efd;
     background: transparent;
   }
 
-  .btn-edit:hover {
+  .btn-editar:active {
     background: #0d6efd;
     color: #fff;
   }
 
-  .btn-delete {
-    color: #dc3545;
+  .btn-eliminar {
     border-color: #dc3545;
+    color: #dc3545;
     background: transparent;
   }
 
-  .btn-delete:hover {
+  .btn-eliminar:active {
     background: #dc3545;
     color: #fff;
   }
 
-  .empty-message {
-    text-align: center;
-    color: #6c757d;
-    padding: 40px 20px;
+  .btn-color-action i {
     font-size: 14px;
   }
 
-  .empty-message i {
-    font-size: 32px;
+  /* Mensaje vacío */
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: #6c757d;
+  }
+
+  .empty-state i {
+    font-size: 40px;
     color: #ccc;
     display: block;
-    margin-bottom: 10px;
+    margin-bottom: 12px;
   }
 
-  /* ===== MEDIA QUERIES: TABLET ===== */
-  @media (max-width: 768px) {
-    .color-form-container {
-      padding: 15px;
-      margin-bottom: 20px;
+  .empty-state p {
+    font-size: 14px;
+    margin: 0;
+  }
+
+  /* === MEDIA QUERIES === */
+  @media (min-width: 781px) {
+    /* Para pantallas más grandes, mostrar tabla tradicional */
+    .colores-table thead {
+      display: table-header-group;
+      background: #f8f9fa;
+      border-bottom: 2px solid #e0e0e0;
     }
 
-    .color-form-container h5 {
-      font-size: 15px;
-      margin-bottom: 12px;
+    .colores-table tr {
+      display: table-row;
+      padding: 0;
+      border: none;
+      border-bottom: 1px solid #f0f0f0;
     }
 
-    .color-form-container .input-group {
-      gap: 6px;
+    .colores-table td {
+      display: table-cell;
+      padding: 14px 16px;
+      border-bottom: 1px solid #f0f0f0;
     }
 
-    .color-form-container .form-control {
-      padding: 9px 10px;
+    .colores-table td:first-child {
+      border-bottom: 1px solid #f0f0f0;
+      border: none;
+      padding-bottom: 14px;
+    }
+
+    .colores-table td:first-child:before {
+      content: none;
+    }
+
+    .colores-table td:last-child {
+      border-top: none;
+      padding-top: 14px;
+      margin-top: 0;
+      text-align: center;
+    }
+
+    .acciones-grupo {
+      justify-content: center;
+    }
+
+    .btn-color-action {
+      min-width: auto;
+      padding: 6px 12px;
       font-size: 13px;
-    }
-
-    .color-form-container .btn {
-      padding: 9px 12px;
-      font-size: 13px;
-    }
-
-    .colors-list-header {
-      padding: 12px 15px;
-      font-size: 14px;
-    }
-
-    .table-colors th,
-    .table-colors td {
-      padding: 10px 12px;
-      font-size: 13px;
-    }
-
-    .btn-action {
-      padding: 5px 8px;
-      font-size: 11px;
     }
   }
 
-  /* ===== MEDIA QUERIES: CELULARES ===== */
   @media (max-width: 480px) {
-    .color-form-container {
-      padding: 12px;
-      margin-bottom: 15px;
+    .color-form-card {
+      padding: 14px;
+      margin-bottom: 16px;
     }
 
-    .color-form-container h5 {
-      font-size: 14px;
+    .color-form-card h5 {
+      font-size: 13px;
       margin-bottom: 10px;
     }
 
-    .color-form-container .input-group {
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .color-form-container .form-control {
-      width: 100%;
-      padding: 10px 12px;
-      font-size: 14px;
-    }
-
-    .color-form-container .btn {
-      width: 100%;
-      padding: 10px;
-      font-size: 14px;
-    }
-
-    .colors-list-container {
-      border-radius: 8px;
-    }
-
-    .colors-list-header {
-      padding: 12px 12px;
+    .colores-list-header {
+      padding: 12px 14px;
       font-size: 13px;
     }
 
-    /* Convertir tabla a tarjetas en móvil */
-    .table-colors {
-      display: block;
+    .colores-table tr {
+      padding: 12px 14px;
     }
 
-    .table-colors thead {
-      display: none;
+    .colores-table td {
+      font-size: 13px;
     }
 
-    .table-colors tbody {
-      display: block;
+    .colores-table td:first-child {
+      font-size: 14px;
     }
 
-    .table-colors tr {
-      display: block;
-      background: #fff;
-      border: 1px solid #e9ecef;
-      border-radius: 8px;
-      margin-bottom: 12px;
-      padding: 12px;
-      overflow: hidden;
+    .btn-color-action {
+      padding: 7px 8px;
+      font-size: 11px;
+      min-width: 70px;
     }
 
-    .table-colors tr:hover {
-      background-color: #fff;
-      border-color: #0d6efd;
-    }
-
-    .table-colors td {
-      display: block;
-      padding: 8px 0;
-      border: none;
-      text-align: right;
-      position: relative;
-      padding-left: 40%;
-    }
-
-    .table-colors td:first-child {
-      text-align: left;
-      padding-left: 0;
-      padding-bottom: 10px;
-      border-bottom: 1px solid #e9ecef;
-      font-weight: 600;
-      color: #343a40;
-    }
-
-    .table-colors td:before {
-      content: attr(data-label);
-      position: absolute;
-      left: 0;
-      font-weight: 600;
-      color: #6c757d;
-      font-size: 12px;
-    }
-
-    .table-colors td.text-center {
-      text-align: right;
-    }
-
-    .table-colors td.text-center:before {
-      display: none;
-    }
-
-    .btn-action {
-      display: inline-block;
-      padding: 6px 10px;
-      font-size: 12px;
-      margin-right: 6px;
-      margin-bottom: 4px;
-    }
-
-    .btn-action:last-child {
-      margin-right: 0;
-    }
-
-    .empty-message {
+    .empty-state {
       padding: 30px 15px;
-      font-size: 13px;
     }
 
-    .empty-message i {
-      font-size: 28px;
-      margin-bottom: 8px;
+    .empty-state i {
+      font-size: 36px;
     }
   }
 </style>
 
-<!-- Formulario para agregar color -->
-<div class="color-form-container">
-  <h5>
-    <i class="bi bi-plus-circle text-success"></i>
-    Agregar nuevo color
-  </h5>
-  <form method="POST" action="{{ url_for('gestionar_colores') }}">
-    <div class="input-group">
-      <input type="text" class="form-control" name="nombre" placeholder="Nombre del Color" required>
-      <button class="btn btn-success" type="submit" data-bs-toggle="tooltip" title="Registrar color">
-        <i class="bi bi-plus-circle"></i>
-        <span class="d-none d-sm-inline">Agregar</span>
-      </button>
-    </div>
-  </form>
-</div>
-
-<!-- Lista de colores -->
-<div class="colors-list-container">
-  <div class="colors-list-header">
-    <i class="bi bi-list-ul"></i>
-    Lista de colores registrados
+<div class="colores-container">
+  <!-- Formulario para agregar color -->
+  <div class="color-form-card">
+    <h5>
+      <i class="bi bi-plus-circle text-success"></i>
+      Agregar nuevo color
+    </h5>
+    <form method="POST" action="{{ url_for('gestionar_colores') }}">
+      <div class="input-group">
+        <input type="text" class="form-control" name="nombre" placeholder="Ej: Rojo, Azul, Verde..." required>
+        <button class="btn btn-success" type="submit" data-bs-toggle="tooltip" title="Registrar color">
+          <i class="bi bi-plus-circle"></i>
+          <span class="d-none d-sm-inline">Agregar</span>
+        </button>
+      </div>
+    </form>
   </div>
-  <div class="colors-list-body">
+
+  <!-- Lista de colores -->
+  <div class="colores-list-card">
+    <div class="colores-list-header">
+      <i class="bi bi-list-ul"></i>
+      Lista de colores registrados
+    </div>
+    
     {% if colores %}
-    <table class="table-colors">
+    <table class="colores-table">
       <thead>
         <tr>
-          <th>🎨 Color</th>
-          <th class="text-center">⚙️ Acciones</th>
+          <th style="padding: 12px 16px; text-align: left; font-weight: 600; color: #495057; font-size: 13px;">🎨 Color</th>
+          <th style="padding: 12px 16px; text-align: center; font-weight: 600; color: #495057; font-size: 13px;">⚙️ Acciones</th>
         </tr>
       </thead>
       <tbody>
         {% for c in colores %}
         <tr>
-          <td data-label="Color">{{ c.nombre }}</td>
-          <td class="text-center" data-label="Acciones">
-            <a href="{{ url_for('editar_color', id=c.id) }}" class="btn-action btn-edit" data-bs-toggle="tooltip" title="Editar color">
-              <i class="bi bi-pencil"></i>
-              <span class="d-none d-md-inline">Editar</span>
-            </a>
-            <a href="{{ url_for('eliminar_color', id=c.id) }}" class="btn-action btn-delete"
-               onclick="return confirm('¿Seguro que deseas eliminar este color?')" data-bs-toggle="tooltip" title="Eliminar color">
-              <i class="bi bi-trash"></i>
-              <span class="d-none d-md-inline">Eliminar</span>
-            </a>
+          <td>{{ c.nombre }}</td>
+          <td>
+            <div class="acciones-grupo">
+              <a href="{{ url_for('editar_color', id=c.id) }}" class="btn-color-action btn-editar" data-bs-toggle="tooltip" title="Editar color">
+                <i class="bi bi-pencil"></i>
+                <span>Editar</span>
+              </a>
+              <a href="{{ url_for('eliminar_color', id=c.id) }}" class="btn-color-action btn-eliminar"
+                 onclick="return confirm('¿Seguro que deseas eliminar este color?')" data-bs-toggle="tooltip" title="Eliminar color">
+                <i class="bi bi-trash"></i>
+                <span>Eliminar</span>
+              </a>
+            </div>
           </td>
         </tr>
         {% endfor %}
       </tbody>
     </table>
     {% else %}
-    <div class="empty-message">
+    <div class="empty-state">
       <i class="bi bi-emoji-frown"></i>
       <p>No hay colores registrados</p>
+      <p style="font-size: 12px; color: #999; margin-top: 8px;">Agrega uno usando el formulario anterior</p>
     </div>
     {% endif %}
   </div>

@@ -1821,9 +1821,23 @@ def salida_lote():
 @app.route("/pedidos")
 def ver_pedidos():
     pedidos = Pedido.query.order_by(Pedido.fecha.desc()).all()
-    status_pedidos = (StatusPedido.query.order_by(StatusPedido.id.desc()).limit(3).all()[::-1]) # Obtener los 3 ultimos estatus y ordenarlos ascendentemente                      
+    status_pedidos = (StatusPedido.query.order_by(StatusPedido.id.desc()).limit(3).all()[::-1])
 
-    
+    # Cálculo de totales por color
+    totales_por_color = {}
+
+    for pedido in pedidos:
+        totales_por_color[pedido.id] = {}  # un diccionario por pedido
+
+        for det in pedido.detalles:
+            color = det.color.nombre
+            cantidad = det.cantidad
+
+            if color not in totales_por_color[pedido.id]:
+                totales_por_color[pedido.id][color] = 0
+
+            totales_por_color[pedido.id][color] += cantidad
+
     # Filtros
     estado_id = request.args.get("estado")
     numero_pedido = request.args.get("numero_pedido", "").strip()
@@ -1831,11 +1845,14 @@ def ver_pedidos():
     if estado_id and estado_id != "":
         pedidos = [p for p in pedidos if p.status_pedido == int(estado_id)]
     if numero_pedido:
-        pedidos = [p for p in pedidos if str(p.numero_pedido) == numero_pedido]       
+        pedidos = [p for p in pedidos if str(p.numero_pedido) == numero_pedido]
 
-
-
-    return render_template("pedidos.html", pedidos=pedidos, status_pedidos=status_pedidos)
+    return render_template(
+        "pedidos.html",
+        pedidos=pedidos,
+        status_pedidos=status_pedidos,
+        totales_por_color=totales_por_color
+    )
 
 
 # ===============================
@@ -2072,22 +2089,28 @@ def pedido_cancelar(pedido_id):
         "mensaje": "Pedido cancelado y stock devuelto correctamente."
     })
 
-@app.route("/inventario_dashboard")
-def inventario_dashboard():
+# ===============================
+#   RUTA: Consulta
+#===============================
+
+@app.route("/consulta")
+def consulta():
 
     color_id = request.args.get("color_id")
     talla_id = request.args.get("talla_id")
+
 
     colores = Color.query.all()
     tallas = Talla.query.all()
     estados = Status.query.all()
 
     status_en_inventario = Status.query.filter_by(nombre="En_Inventario").first()
+  
 
     # Consulta base de inventario
     inventarios = db.session.query(Inventario).join(Color).join(Talla).join(Status)
     inventarios = inventarios.order_by(Talla.id.asc())
-    inventarios = inventarios.filter(Inventario.status_id == status_en_inventario.id) #Estatus de "En_Inventario"
+    inventarios = inventarios.filter(Inventario.status_id == status_en_inventario.id, Inventario.cantidad > 0) #Estatus de "En_Inventario"
 
     # Aplicar filtros
     if color_id and color_id != "":
@@ -2097,18 +2120,27 @@ def inventario_dashboard():
 
     inventarios = inventarios.all()
 
+    # Agrupamiento cuando solo se selecciona la talla
+    inventarios_agrupados = {}
+
+    for inv in inventarios:
+        color = inv.color.nombre
+        if color not in inventarios_agrupados:
+            inventarios_agrupados[color] = []
+        inventarios_agrupados[color].append(inv)
+
     # 🔥 FILTRAR: solo colores que tengan tallas en inventario
     colores_con_inventario = {inv.color_id for inv in inventarios}
     colores = [c for c in colores if c.id in colores_con_inventario]
 
     return render_template(
-        "inventario_dashboard.html",
+        "consulta.html",
         colores=colores,
         tallas=tallas,
         estados=estados,
         inventarios=inventarios,
         color_seleccionado=color_id,
-        talla_seleccionada=talla_id
+        talla_seleccionada=talla_id, inventarios_agrupados=inventarios_agrupados,
     )
     
 if __name__ == "__main__":

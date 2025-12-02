@@ -1295,7 +1295,7 @@ def inventario_disponible():
     # Consulta base de inventario
     inventarios = db.session.query(Inventario).join(Color).join(Talla).join(Status)
     inventarios = inventarios.order_by(Talla.id.asc())
-    inventarios = inventarios.filter(Inventario.status_id == 5) #Estatus de "En_Inventario"
+    inventarios = inventarios.filter(Inventario.status_id == 5, Inventario.cantidad > 0) #Estatus de "En_Inventario" y Cantidad mayor a "0"
 
     # Aplicar filtros
     if color_id and color_id != "":

@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block title %}Salidas por Lote - Producción{% endblock %}
-{% block header %}📦 Registro de Salida por Lote{% endblock %}
+{% block header %}🛒 Registro de Salida por Surtido{% endblock %}
 
 {% block content %}
 <style>
@@ -73,7 +73,8 @@
       padding: 0.4rem 0.6rem;
     }
   }
-</style>
+
+  </style>
 
 <div class="container mt-4">
 
@@ -97,20 +98,12 @@
         <input type="date" class="form-control" name="fecha" value="{{ fecha_hoy }}" required>
       </div>
       <div class="col-md-3">
-        <label class="form-label fw-semibold">⚙️Tipo de Salida</label>
-        <input type="text" class="form-control" name="tipo_salida" value="Surtido" readonly>
-      </div>
-      <div class="col-md-3">
         <label class="form-label fw-semibold">👤Cliente</label>
         <input type="text" class="form-control" name="cliente" required>
       </div>
     </div>
 
-    <div class="row g-3 mt-3">
-      <div class="col-md-3">
-        <label class="form-label fw-semibold">👤Usuario</label>
-        <input type="text" class="form-control" name="usuario" value="{{ usuario_actual }}" readonly>
-      </div>
+    <div class="row g-3 mt-2">
       <div class="col-md-5">
         <label class="form-label fw-semibold">Observaciones✏️</label>
         <input type="text" class="form-control" name="observaciones">
@@ -128,8 +121,8 @@
           <option value="{{ c.id }}">{{ c.nombre }}</option>
         {% endfor %}
       </select>
-      <button type="button" class="btn btn-info" id="btn_ver_inventario" disabled data-bs-toggle="modal" data-bs-target="#modalInventario">
-        <i class="bi bi-eye"></i> Ver Inventario
+      <button type="button" class="btn btn-primary" id="btn_ver_inventario" disabled data-bs-toggle="modal" data-bs-target="#modalInventario" aria-label="Ver inventario del color seleccionado">
+        <i class="bi bi-eye me-1"></i> Ver Inventario
       </button>
     </div>
   </div>
@@ -468,11 +461,11 @@ document.getElementById("btn_dar_salida").addEventListener("click", async () => 
 
   const pedido = {
     pedido_numero: pedidoNumero,
-    fecha: document.querySelector("[name='fecha']").value,
-    tipo_salida: document.querySelector("[name='tipo_salida']").value,
-    cliente: document.querySelector("[name='cliente']").value,
-    usuario: document.querySelector("[name='usuario']").value,
-    observaciones: document.querySelector("[name='observaciones']").value,
+    fecha: document.querySelector("[name='fecha']").value || "",
+    tipo_salida: "Surtido",
+    cliente: document.querySelector("[name='cliente']").value || "",
+    usuario: "",
+    observaciones: document.querySelector("[name='observaciones']")?.value || "",
     detalles: datos
   };
 
@@ -499,7 +492,6 @@ document.getElementById("btn_dar_salida").addEventListener("click", async () => 
       // Reset: datos del pedido
       document.querySelector("[name='cliente']").value = "";
       document.querySelector("[name='observaciones']").value = "";
-      document.querySelector("[name='tipo_salida']").value = "Surtido";
       document.querySelector("[name='fecha']").value = "{{ fecha_hoy }}";
       document.getElementById("color").value = "";
       document.getElementById("btn_ver_inventario").disabled = true;

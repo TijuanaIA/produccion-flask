@@ -429,11 +429,6 @@
     <div class="sidebar">
         <h3>🧵 Producción</h3>
 
-        <a href="{{ url_for('inicio') }}" title="Inicio">
-            <i class="bi bi-house-fill"></i>
-            <span>Inicio</span>
-        </a>
-
         <a href="{{ url_for('gestionar_colores') }}" title="Colores">
             <i class="bi bi-palette-fill"></i>
             <span>Colores</span>
@@ -461,7 +456,7 @@
 
         <a href="{{ url_for('surtido') }}" title="Ventana de Surtido">
             <i class="bi bi-cart-check-fill"></i>
-            <span>Surtido</span>
+            <span>Surtir</span>
         </a>
 
         <a href="{{ url_for('ver_pedidos') }}" title="Ventana de Pedidos">
@@ -474,10 +469,6 @@
             <span>Historial</span>
         </a>
 
-        <a href="{{ url_for('logout') }}" title="Salir">
-            <i class="bi bi-box-arrow-right"></i>
-            <span>Salir</span>
-        </a>
     </div>
 
     <!-- Contenido Principal -->
@@ -486,7 +477,13 @@
         <!-- Header -->
         <div class="topbar">
             <h5>{% block header %}Panel de Control{% endblock %}</h5>
-            <span class="text-muted">Usuario: Sistema</span>
+            <span>Usuario: {{ session.get('usuario', 'Invitado') }}
+            &nbsp;&nbsp;&nbsp;
+            <a href="{{ url_for('logout') }}" title="Salir">
+            <i class="bi bi-box-arrow-right"></i>
+            Salir
+            </a>
+            </span>
         </div>
 
         <!-- Mensajes flash -->

@@ -82,7 +82,6 @@
                 <p><strong>Cantidad Total:</strong> {{ pedido.detalles | sum(attribute='cantidad') }}</p>
                 <p><strong>Costo Total:</strong> ${{ pedido.costo_total }}</p>
                 <p><strong>Observaciones:</strong> {{ pedido.observaciones or "N/A" }}</p>
-                <p><strong>Estatus:</strong> {{ pedido.status_pedido or "N/A" }}</p>
 
                 <hr>
 

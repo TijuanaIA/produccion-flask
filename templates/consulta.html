@@ -351,7 +351,7 @@
             <div class="mb-3">
                 <label class="label-filtro">🎨 Selecciona un Color:</label>
                 <select name="color_id" class="form-select select-grande">
-                    <option value="">📋 Ver Todos los Colores</option>
+                    <option value="">📋Lista de Colores</option>
                     {% for c in colores %}
                         <option value="{{ c.id }}" {% if color_seleccionado == c.id|string %}selected{% endif %}>
                             {{ c.nombre }}
@@ -364,7 +364,7 @@
             <div class="mb-3">
                 <label class="label-filtro">👕 Selecciona una Talla:</label>
                 <select name="talla_id" class="form-select select-grande">
-                    <option value="">📋 Ver Todas las Tallas</option>
+                    <option value="">📋Lista de Tallas</option>
                     {% for t in tallas %}
                         <option value="{{ t.id }}" {% if talla_seleccionada == t.id|string %}selected{% endif %}>
                             {{ t.nombre }}
@@ -431,7 +431,7 @@
             {% for color, items in inventarios_agrupados.items() %}
                 <div class="resultados-container mb-4">
                     <div class="color-titulo">
-                        🎨 <strong>Color:</strong> {{ color }}
+                        🎨 {{ color }}
                     </div>
 
                     <div class="tabla-wrapper">

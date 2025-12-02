@@ -130,6 +130,7 @@ def login():
 
     return render_template("login.html")
 
+
 @app.route("/logout")
 def logout():
     usuario = session.pop("usuario", None)
@@ -657,6 +658,7 @@ def eliminar_corte(corte_id):
 
 #----RUTA PARA LISTAR CORTES----
 @app.route("/cortes_listado")
+@login_requerido
 def ver_cortes():
 
     # Carga datos para selects
@@ -716,6 +718,7 @@ def ver_cortes():
 
 #----RUTA PARA LISTAR PRODUCCIÓN----
 @app.route("/produccion", methods=["GET", "POST"])
+@login_requerido
 def produccion_listado():
 
     # Carga filtros y listas para selects
@@ -860,6 +863,7 @@ def actualizar_estados():
 
 #----RUTA PARA MARCAR ESTADO DE COSTURA EN MASA----
 @app.route("/marcar_estado_costura", methods=["POST"])
+@login_requerido
 def marcar_estado_costura():
     try:
         ids = request.form.getlist("produccion_ids")
@@ -911,6 +915,7 @@ def marcar_estado_costura():
 
 # --- RUTA PARA VER EL HISTORIAL DEL ESTATUS ---
 @app.route("/historial_status", methods=["GET"])
+@login_requerido
 def historial_status():
     colores = Color.query.order_by(Color.nombre).all()
     estados = Status.query.order_by(Status.nombre).all()
@@ -996,6 +1001,7 @@ def historial_status():
 # ---- RUTA PARA DASHBOARD DE PRODUCCIÓN ----
 
 @app.route("/dashboard_produccion", methods=["GET"])
+@login_requerido
 def dashboard_produccion():
     mes = request.args.get("mes")
     anio = request.args.get("anio")
@@ -1130,6 +1136,7 @@ def api_resumen_mes():
 # ==========================
 
 @app.route('/recepcion_produccion')
+@login_requerido
 def recepcion_produccion():
 
     # Obtener el ID del status "Enviada_a_inventario"
@@ -1193,6 +1200,7 @@ def recepcionar_prenda(id):
 # ==========================
 
 @app.route("/ingreso_manual", methods=["GET", "POST"])
+@login_requerido
 def ingreso_manual():
     colores = Color.query.all()
     tallas = Talla.query.all()
@@ -1284,6 +1292,7 @@ def ingreso_manual():
 #   RUTA: Inventario solo Estatus "En_Inventario"
 # ===============================
 @app.route("/inventario_disponible", methods=["GET"])
+@login_requerido
 def inventario_disponible():
     color_id = request.args.get("color_id")
     talla_id = request.args.get("talla_id")
@@ -1323,6 +1332,7 @@ def inventario_disponible():
 #   RUTA: Inventario General
 # ===============================
 @app.route("/inventario_general", methods=["GET"])
+@login_requerido
 def inventario_general():
     color_id = request.args.get("color_id")
     talla_id = request.args.get("talla_id")
@@ -1557,6 +1567,7 @@ def salida_simple(id):
 #   RUTA: Ver Historial de Inventario
 # ===============================
 @app.route("/ver_historial_inventario")
+@login_requerido
 def ver_historial_inventario():
 
     # Obtener filtros
@@ -1606,8 +1617,9 @@ def ver_historial_inventario():
 
 # --- RUTA PARA DAR SALIDAS POR LOTE---
 @app.route("/surtido", methods=["GET","POST"])
+@login_requerido
 def surtido():
-    colores = Color.query.order_by(Color.nombre).all()
+    colores = Color.query.order_by(Color.id).all()
     tallas = Talla.query.order_by(Talla.id).all()
     usuario_actual = session.get("usuario", "Sistema")
 
@@ -1663,7 +1675,6 @@ def salida_lote():
     if not data:
         return jsonify({"status": "error", "mensaje": "No se recibieron datos"}), 400
 
-    tipo_salida = data.get("tipo_salida")
     cliente = data.get("cliente")
     numero_pedido = data.get("pedido_numero")
     observaciones = data.get("observaciones", "")
@@ -1819,6 +1830,7 @@ def salida_lote():
 #===============================
 
 @app.route("/pedidos")
+@login_requerido
 def ver_pedidos():
     pedidos = Pedido.query.order_by(Pedido.fecha.desc()).all()
     status_pedidos = (StatusPedido.query.order_by(StatusPedido.id.desc()).limit(3).all()[::-1])
@@ -2094,6 +2106,7 @@ def pedido_cancelar(pedido_id):
 #===============================
 
 @app.route("/consulta")
+@login_requerido
 def consulta():
 
     color_id = request.args.get("color_id")

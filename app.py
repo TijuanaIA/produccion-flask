@@ -2155,6 +2155,9 @@ def consulta():
         color_seleccionado=color_id,
         talla_seleccionada=talla_id, inventarios_agrupados=inventarios_agrupados,
     )
-    
+
+
+port = int(os.environ.get("PORT", 5000))
+
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=port)
